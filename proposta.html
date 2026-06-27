@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PalmVein + Cimed</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{
+  overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+  background-color:#0b1e4a;
+}
+body{
+  background-color:#0b1e4a;
+  min-height:100vh;
+  font-family:'DM Sans',sans-serif;
+  overflow-x:hidden;
+  padding:0;
+}
+
+/* ── TOKENS ── */
+:root{
+  --navy:#112860; --navy2:#0b1e4a;
+  --blue:#2B8AFC; --mint:#56EF9E;
+  --vein:#FFFDF8; --haze:#C7C7C7;
+  --fd:'Space Grotesk',sans-serif;
+  --fb:'DM Sans',sans-serif;
+}
+
+/* ── HERO TEASER ── */
+.teaser{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
+  background-color:#0b1e4a;
+}
+
+/* animated bg blobs — hex direto (Safari não suporta var() em filter:blur) */
+.blob{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:.22;
+  pointer-events:none;
+  animation:drift 12s ease-in-out infinite alternate;
+  will-change:transform;
+}
+.blob1{width:500px;height:500px;background:#2B8AFC;top:-120px;right:-100px;animation-duration:14s}
+.blob2{width:400px;height:400px;background:#56EF9E;bottom:-80px;left:-80px;animation-duration:18s;animation-delay:-6s}
+.blob3{width:300px;height:300px;background:#2B8AFC;top:40%;left:30%;animation-duration:22s;animation-delay:-3s;opacity:.1}
+@keyframes drift{
+  from{transform:translate(0,0) scale(1)}
+  to{transform:translate(30px,20px) scale(1.1)}
+}
+
+/* header strip */
+.top-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 28px;
+  position:relative;
+  z-index:2;
+}
+.badge-conf{
+  font-family:var(--fd);
+  font-size:9px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mint);
+  border:1px solid rgba(86,239,158,.28);
+  background:rgba(86,239,158,.08);
+  padding:4px 12px;border-radius:980px;
+}
+
+/* hero content */
+.hero-content{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:0 28px 32px;
+  position:relative;
+  z-index:2;
+}
+.hero-eyebrow{
+  font-family:var(--fd);
+  font-size:10px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--blue);
+  margin-bottom:14px;
+  opacity:0;
+  animation:fadeUp .6s .1s cubic-bezier(.16,1,.3,1) forwards;
+}
+.hero-title{
+  font-family:var(--fd);
+  font-size:clamp(32px,7vw,56px);
+  font-weight:700;
+  color:#fff;
+  letter-spacing:-.04em;
+  line-height:1.04;
+  margin-bottom:16px;
+  opacity:0;
+  animation:fadeUp .7s .2s cubic-bezier(.16,1,.3,1) forwards;
+}
+.hero-title em{font-style:normal;color:var(--mint)}
+.hero-sub{
+  font-size:15px;
+  color:rgba(255,255,255,.5);
+  line-height:1.65;
+  max-width:480px;
+  margin-bottom:36px;
+  opacity:0;
+  animation:fadeUp .7s .35s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+/* CTA buttons */
+.hero-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  opacity:0;
+  animation:fadeUp .7s .5s cubic-bezier(.16,1,.3,1) forwards;
+}
+.btn-primary{
+  font-family:var(--fd);
+  font-size:14px;font-weight:700;
+  background:var(--mint);
+  color:var(--navy);
+  border:none;
+  padding:13px 24px;
+  border-radius:980px;
+  cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:0 4px 24px rgba(86,239,158,.3);
+  white-space:nowrap;
+}
+.btn-primary:hover{transform:scale(1.03);box-shadow:0 6px 32px rgba(86,239,158,.45)}
+.btn-primary:active{transform:scale(.97)}
+.btn-ghost{
+  font-family:var(--fd);
+  font-size:14px;font-weight:600;
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.7);
+  border:1.5px solid rgba(255,255,255,.15);
+  padding:12px 22px;
+  border-radius:980px;
+  cursor:pointer;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.14);color:#fff}
+
+/* scroll hint */
+.scroll-hint{
+  position:absolute;
+  bottom:24px;left:50%;
+  transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;
+  gap:6px;
+  z-index:2;
+  opacity:0;
+  animation:fadeUp .5s 1.1s ease forwards;
+}
+.scroll-hint span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3)}
+.scroll-arrow{
+  width:24px;height:24px;
+  border:1.5px solid rgba(255,255,255,.2);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  animation:bounce 2s 1.5s ease-in-out infinite;
+}
+.scroll-arrow svg{fill:rgba(255,255,255,.4)}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+
+/* stats row */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:rgba(255,255,255,.06);
+  border-top:1px solid rgba(255,255,255,.08);
+  position:relative;z-index:2;
+  opacity:0;
+  animation:fadeUp .7s .7s cubic-bezier(.16,1,.3,1) forwards;
+}
+.stat{
+  padding:16px 20px;
+  background:rgba(255,255,255,.03);
+}
+.stat-val{
+  font-family:var(--fd);
+  font-size:22px;font-weight:700;
+  color:var(--mint);
+  letter-spacing:-.03em;
+  line-height:1;
+  margin-bottom:4px;
+}
+.stat-label{font-size:11px;color:rgba(255,255,255,.35);line-height:1.4}
+
+/* ── FULL DECK (hidden initially) ── */
+.full-deck{
+  display:none;
+  background:var(--vein);
+  min-height:100vh;
+}
+.full-deck.open{display:block}
+
+/* deck header */
+.deck-header{
+  background:var(--navy);
+  padding:16px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 20px rgba(0,0,0,.3);
+}
+.btn-close{
+  font-family:var(--fd);
+  font-size:12px;font-weight:700;
+  color:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.08);
+  border:1.5px solid rgba(255,255,255,.12);
+  padding:7px 16px;border-radius:980px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.btn-close:hover{color:#fff;background:rgba(255,255,255,.14)}
+
+/* deck body */
+.deck-body{padding:28px 20px 48px}
+.deck-section-title{
+  font-family:var(--fd);
+  font-size:10px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--blue);
+  margin-bottom:16px;
+  padding-left:4px;
+}
+
+/* ── CARD GRID ── */
+.card-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:14px;
+}
+@media(max-width:540px){.card-grid{grid-template-columns:1fr}}
+.span2{grid-column:1/-1}
+
+/* ── FLIP CARD ── */
+.flip-wrap{
+  perspective:1000px;
+  height:210px;
+  cursor:pointer;
+}
+.flip-wrap.tall{height:260px}
+.flip-wrap.auto{height:auto;perspective:none}
+.flip-inner{
+  width:100%;height:100%;
+  position:relative;
+  transform-style:preserve-3d;
+  transition:transform .55s cubic-bezier(.4,0,.2,1);
+}
+.flip-wrap.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-front,.flip-back{
+  position:absolute;inset:0;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:18px;
+  overflow:hidden;
+}
+.flip-back{transform:rotateY(180deg)}
+
+/* card faces */
+.face-navy{background:var(--navy)}
+.face-white{background:#fff;border:1.5px solid rgba(17,40,96,.09)}
+.face-mint{background:var(--mint)}
+.face-blue{background:var(--blue)}
+
+.card-pad{padding:20px}
+
+.c-label{
+  font-family:var(--fd);
+  font-size:9px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:8px;
+}
+.lbl-mint{color:var(--mint);opacity:.8}
+.lbl-blue{color:var(--blue)}
+.lbl-navy{color:var(--navy);opacity:.6}
+
+.c-title{
+  font-family:var(--fd);
+  font-size:14px;font-weight:700;
+  letter-spacing:-.02em;line-height:1.3;
+  margin-bottom:6px;
+}
+.t-white{color:#fff}
+.t-navy{color:var(--navy)}
+
+.c-body{font-size:12px;line-height:1.65}
+.b-dim{color:rgba(255,255,255,.5)}
+.b-gray{color:#666}
+.b-navy{color:rgba(17,40,96,.7)}
+
+/* flip hint */
+.flip-hint{
+  position:absolute;
+  bottom:12px;right:14px;
+  font-size:9px;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;
+  opacity:.4;
+  display:flex;align-items:center;gap:4px;
+}
+.flip-hint-navy{color:var(--navy)}
+.flip-hint-white{color:#fff}
+
+/* metric dots */
+.metric-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:8px;margin-top:14px;
+}
+.m-dot{
+  text-align:center;
+  background:rgba(43,138,252,.12);
+  border:1px solid rgba(43,138,252,.2);
+  border-radius:10px;padding:10px 4px;
+}
+.m-val{
+  font-family:var(--fd);font-size:20px;font-weight:700;
+  color:var(--mint);letter-spacing:-.03em;line-height:1;margin-bottom:3px;
+}
+.m-lbl{font-size:9px;color:rgba(255,255,255,.38);line-height:1.35}
+
+/* back list */
+.back-list{
+  display:flex;flex-direction:column;gap:8px;
+  margin-top:12px;
+}
+.back-item{
+  display:flex;align-items:flex-start;gap:8px;
+}
+.bi-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--mint);flex-shrink:0;margin-top:5px;
+}
+.bi-dot-blue{background:var(--blue)}
+.bi-text{font-size:12px;line-height:1.5}
+
+/* tension strip */
+.tension{
+  border-left:3px solid var(--blue);
+  border-radius:0 8px 8px 0;
+  background:rgba(43,138,252,.07);
+  padding:9px 12px;margin-top:12px;
+}
+.tension.green{border-left-color:var(--mint);background:rgba(86,239,158,.08)}
+.tension p{font-size:11px;color:var(--navy);line-height:1.6;font-style:italic}
+
+/* benefit items */
+.benefit+.benefit{margin-top:12px}
+.benefit{display:flex;gap:10px;align-items:flex-start}
+.bicon{
+  width:26px;height:26px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;flex-shrink:0;
+}
+.bt{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.bd{font-size:11px;color:#666;line-height:1.55}
+
+/* CTA card */
+.cta-card{
+  background:var(--mint);
+  border-radius:18px;
+  padding:22px 20px;
+}
+.cta-heading{
+  font-family:var(--fd);font-size:18px;font-weight:700;
+  color:var(--navy);letter-spacing:-.03em;margin-bottom:6px;
+}
+.cta-sub{font-size:13px;color:rgba(17,40,96,.65);line-height:1.5;margin-bottom:18px}
+.cta-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.cta-contact .cn{font-family:var(--fd);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:rgba(17,40,96,.5);margin-bottom:2px}
+.cta-contact .cp{font-size:12px;color:rgba(17,40,96,.65)}
+.btn-dark{
+  font-family:var(--fd);font-size:13px;font-weight:700;
+  background:var(--navy);color:#fff;border:none;
+  padding:11px 20px;border-radius:980px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;
+  transition:all .2s;white-space:nowrap;
+  text-decoration:none;
+}
+.btn-dark:hover{opacity:.85}
+.bdot{
+  width:17px;height:17px;border-radius:50%;
+  background:var(--mint);color:var(--navy);
+  font-size:11px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* frentes 1 e 2 */
+.frente-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  margin-top:12px;
+}
+@media(max-width:400px){.frente-grid{grid-template-columns:1fr}}
+.frente-item{
+  background:rgba(43,138,252,.1);
+  border:1px solid rgba(43,138,252,.18);
+  border-radius:10px;padding:10px 12px;
+}
+.fi-title{font-family:var(--fd);font-size:11px;font-weight:700;color:#fff;margin-bottom:2px}
+.fi-desc{font-size:10px;color:rgba(255,255,255,.45);line-height:1.5}
+
+/* deck footer */
+.deck-footer{
+  background:var(--navy);
+  padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;
+}
+.df-copy{font-size:11px;color:rgba(255,255,255,.3)}
+.df-contacts{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dfc{font-size:11px;color:rgba(255,255,255,.4)}
+.dfc strong{color:rgba(255,255,255,.7);font-weight:600}
+.dsep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.2)}
+
+/* modal overlay */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(5,14,35,.85);
+  z-index:200;
+  align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  animation:fadeIn .25s ease;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--vein);
+  border-radius:20px;
+  width:calc(100% - 32px);max-width:520px;
+  max-height:85vh;overflow-y:auto;
+  padding:28px 24px;
+  animation:slideUp .35s cubic-bezier(.16,1,.3,1);
+}
+.modal-box::-webkit-scrollbar{display:none}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px}
+.modal-title{font-family:var(--fd);font-size:18px;font-weight:700;color:var(--navy);letter-spacing:-.03em}
+.modal-close{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(17,40,96,.08);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:var(--navy);font-size:16px;
+  transition:background .15s;
+}
+.modal-close:hover{background:rgba(17,40,96,.16)}
+.modal-body{font-size:13px;color:#555;line-height:1.7}
+.modal-section{margin-bottom:16px}
+.modal-section-title{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.modal-list{display:flex;flex-direction:column;gap:6px}
+.ml-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#555;line-height:1.55}
+.ml-check{width:16px;height:16px;border-radius:50%;background:var(--mint);color:var(--navy);font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+/* animations */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* card entrance in deck */
+.deck-card-enter{
+  opacity:0;transform:translateY(20px);
+  transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1);
+}
+.deck-card-enter.visible{opacity:1;transform:translateY(0)}
+
+/* glow on navy card */
+.glow-dot{
+  position:absolute;top:-40px;right:-40px;
+  width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(43,138,252,.2) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+@media(max-width:480px){
+  .hero-title{font-size:clamp(28px,8vw,42px)}
+  .hero-sub{font-size:13px}
+  .stats-row{grid-template-columns:1fr 1fr 1fr}
+  .stat-val{font-size:18px}
+  .stat-label{font-size:10px}
+  .top-bar{padding:16px 20px}
+  .hero-content{padding:0 20px 24px}
+  .deck-body{padding:20px 16px 40px}
+  .card-grid{gap:10px}
+  .cta-row{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     TEASER — hero rápido
+══════════════════════════════════════ -->
+<div class="teaser" id="teaser">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+
+  <!-- top bar -->
+  <div class="top-bar">
+    <svg id="Camada_2" style="height:26px;width:auto;display:block" data-name="Camada 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 701.57 146.53">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #84eca6;
+      }
+
+      .cls-2 {
+        fill: #fffdf9;
+      }
+    </style>
+  </defs>
+  <g id="Camada_1-2" data-name="Camada 1">
+    <g>
+      <g>
+        <path class="cls-1" d="M414.16,130.84c-1.16-.73-2.47-1.1-3.96-1.1-1.25,0-2.29.25-3.13.75-.84.5-1.51,1.12-2.02,1.86v-9.09h-4.29v22.89h3.82l.48-2.07c.34.47.76.88,1.26,1.26.5.37,1.07.66,1.72.87.65.21,1.38.32,2.21.32,1.48,0,2.8-.36,3.94-1.08,1.14-.72,2.05-1.72,2.72-2.99.67-1.27,1-2.7,1-4.29s-.33-3.08-1-4.34c-.67-1.26-1.58-2.26-2.73-2.99ZM412.96,140.57c-.36.69-.86,1.23-1.51,1.62-.65.39-1.39.59-2.24.59s-1.56-.19-2.21-.57c-.65-.38-1.16-.93-1.53-1.64-.37-.71-.56-1.52-.56-2.43s.18-1.72.56-2.42c.37-.7.88-1.24,1.53-1.64.65-.39,1.38-.59,2.21-.59s1.59.2,2.24.59c.65.39,1.15.94,1.51,1.65.36.71.54,1.52.54,2.43s-.18,1.71-.54,2.4Z"/>
+        <rect class="cls-1" x="424.85" y="130.12" width="4.29" height="16.02"/>
+        <path class="cls-1" d="M427.02,123.1c-.76,0-1.39.23-1.89.68-.5.46-.75,1.03-.75,1.73s.25,1.28.75,1.73c.5.46,1.13.68,1.89.68s1.43-.23,1.92-.68c.5-.45.75-1.03.75-1.73s-.25-1.28-.75-1.73c-.5-.46-1.14-.68-1.92-.68Z"/>
+        <path class="cls-1" d="M448.4,130.81c-1.22-.71-2.6-1.07-4.15-1.07s-2.9.36-4.13,1.07c-1.23.71-2.2,1.7-2.91,2.96-.71,1.26-1.06,2.73-1.06,4.4s.35,3.08,1.06,4.34c.71,1.26,1.67,2.25,2.89,2.96,1.22.71,2.59,1.06,4.12,1.06s2.93-.36,4.16-1.06c1.23-.71,2.2-1.7,2.91-2.96.71-1.26,1.06-2.72,1.06-4.37s-.36-3.11-1.06-4.37c-.71-1.26-1.68-2.25-2.89-2.96ZM447.48,140.74c-.33.7-.77,1.22-1.33,1.56-.56.34-1.2.51-1.92.51-.68,0-1.3-.17-1.86-.51-.56-.34-1.01-.86-1.34-1.56-.33-.7-.49-1.57-.49-2.61s.16-1.9.49-2.59c.33-.69.78-1.21,1.35-1.56.57-.35,1.2-.52,1.88-.52s1.33.17,1.89.52c.56.35,1.01.87,1.33,1.56.33.69.49,1.55.49,2.59s-.16,1.91-.49,2.61Z"/>
+        <path class="cls-1" d="M482.28,130.58c-.93-.56-2.1-.84-3.5-.84-1.12,0-2.16.24-3.11.73-.95.49-1.73,1.17-2.32,2.03-.32-.61-.73-1.12-1.22-1.53-.5-.4-1.07-.71-1.7-.92-.64-.21-1.36-.32-2.16-.32-1.08,0-2.04.23-2.88.68-.84.46-1.51,1.06-2.02,1.83l-.35-2.13h-3.78v16.02h4.29v-8.52c0-.89.14-1.65.43-2.29.29-.64.69-1.12,1.21-1.46.52-.34,1.11-.51,1.76-.51,1.06,0,1.84.34,2.35,1.02s.76,1.65.76,2.92v8.84h4.29v-8.52c0-.89.14-1.65.43-2.29.29-.64.69-1.12,1.22-1.46.53-.34,1.13-.51,1.81-.51,1.04,0,1.81.34,2.3,1.02.5.68.75,1.65.75,2.92v8.84h4.26v-9.22c0-1.55-.24-2.85-.72-3.91s-1.18-1.87-2.11-2.43Z"/>
+        <path class="cls-1" d="M504.18,130.79c-1.19-.7-2.57-1.05-4.16-1.05s-3.07.37-4.31,1.1c-1.24.73-2.2,1.74-2.88,3.02-.68,1.28-1.02,2.76-1.02,4.44s.34,3.07,1.03,4.31c.69,1.24,1.65,2.2,2.89,2.89,1.24.69,2.66,1.03,4.28,1.03,1.25,0,2.38-.23,3.4-.7,1.02-.47,1.88-1.1,2.58-1.91.7-.8,1.2-1.71,1.49-2.7h-4.39c-.25.53-.64.96-1.16,1.3-.52.34-1.17.51-1.96.51s-1.47-.17-2.07-.52c-.59-.35-1.05-.85-1.38-1.49-.27-.53-.42-1.14-.47-1.83h11.81c.04-.28.06-.55.06-.81v-.71c0-1.5-.33-2.85-.99-4.04-.66-1.19-1.58-2.13-2.77-2.83ZM496.15,136.58c.09-.5.22-.95.42-1.33.35-.68.83-1.18,1.45-1.51.61-.33,1.28-.49,2-.49,1,0,1.83.3,2.49.89.67.59,1.03,1.41,1.1,2.45h-7.46Z"/>
+        <path class="cls-1" d="M520.33,125.77h-3.82l-.48,4.36h-2.73v3.59h2.73v6.8c0,1.42.23,2.54.7,3.35.47.82,1.12,1.4,1.95,1.75.84.35,1.82.52,2.94.52h2.89v-3.66h-2.1c-.76,0-1.3-.14-1.62-.41-.32-.28-.48-.77-.48-1.49v-6.87h4.23v-3.59h-4.23v-4.36Z"/>
+        <path class="cls-1" d="M537.04,131.3c-.58.49-1.07,1.08-1.45,1.78l-.41-2.96h-3.82v16.02h4.29v-7.41c0-.87.11-1.59.32-2.16.21-.57.52-1.02.92-1.35.4-.33.87-.57,1.42-.72.54-.15,1.13-.22,1.76-.22h1.46v-4.55c-.91,0-1.74.14-2.5.41-.75.28-1.42.66-2,1.14Z"/>
+        <path class="cls-1" d="M549.81,123.1c-.76,0-1.39.23-1.89.68-.5.46-.75,1.03-.75,1.73s.25,1.28.75,1.73c.5.46,1.13.68,1.89.68s1.43-.23,1.92-.68c.5-.45.75-1.03.75-1.73s-.25-1.28-.75-1.73c-.5-.46-1.14-.68-1.92-.68Z"/>
+        <rect class="cls-1" x="547.65" y="130.12" width="4.29" height="16.02"/>
+        <path class="cls-1" d="M565.18,133.99c.58-.37,1.24-.56,1.99-.56.83,0,1.54.21,2.15.64.6.42,1,1.01,1.19,1.75h4.55c-.38-1.89-1.27-3.37-2.67-4.45-1.4-1.08-3.13-1.62-5.18-1.62-1.61,0-3.04.37-4.29,1.1-1.25.73-2.23,1.73-2.92,2.99-.7,1.26-1.05,2.72-1.05,4.37s.35,3.04,1.05,4.29c.7,1.25,1.67,2.24,2.92,2.96,1.25.72,2.68,1.08,4.29,1.08,2.03,0,3.76-.55,5.17-1.64,1.41-1.09,2.3-2.56,2.69-4.4h-4.55c-.13.51-.35.94-.67,1.29-.32.35-.7.62-1.16.81-.46.19-.96.29-1.51.29s-1.07-.11-1.54-.32c-.48-.21-.89-.53-1.22-.94-.34-.41-.6-.91-.79-1.49-.19-.58-.29-1.24-.29-1.99,0-.98.16-1.82.49-2.53.33-.71.78-1.25,1.37-1.62Z"/>
+        <path class="cls-1" d="M597.6,128.69c0-.66.14-1.12.43-1.38.29-.26.77-.4,1.45-.4h1.34v-3.66h-1.97c-1.12,0-2.1.18-2.94.54-.84.36-1.48.93-1.92,1.72-.45.78-.67,1.84-.67,3.18v1.43h-2.19v3.59h2.19v12.43h4.29v-12.43h3.47v-3.59h-3.47v-1.43Z"/>
+        <path class="cls-1" d="M618.68,138.68c0,.91-.16,1.68-.49,2.3-.33.63-.77,1.1-1.32,1.43-.55.33-1.19.49-1.91.49-1.12,0-1.95-.33-2.49-.98-.54-.66-.81-1.63-.81-2.93v-8.87h-4.29v9.32c0,1.55.24,2.84.73,3.9.49,1.05,1.19,1.84,2.11,2.38.92.54,2.03.81,3.32.81s2.33-.27,3.24-.81c.91-.54,1.6-1.27,2.07-2.18l.35,2.61h3.75v-16.02h-4.26v8.55Z"/>
+        <path class="cls-1" d="M636.23,125.77h-3.82l-.48,4.36h-2.73v3.59h2.73v6.8c0,1.42.23,2.54.7,3.35.47.82,1.12,1.4,1.95,1.75.84.35,1.82.52,2.94.52h2.89v-3.66h-2.1c-.76,0-1.3-.14-1.62-.41-.32-.28-.48-.77-.48-1.49v-6.87h4.23v-3.59h-4.23v-4.36Z"/>
+        <path class="cls-1" d="M658.39,138.68c0,.91-.16,1.68-.49,2.3-.33.63-.77,1.1-1.32,1.43-.55.33-1.19.49-1.91.49-1.12,0-1.95-.33-2.49-.98-.54-.66-.81-1.63-.81-2.93v-8.87h-4.29v9.32c0,1.55.24,2.84.73,3.9.49,1.05,1.19,1.84,2.11,2.38.92.54,2.03.81,3.32.81s2.33-.27,3.24-.81c.91-.54,1.6-1.27,2.07-2.18l.35,2.61h3.75v-16.02h-4.26v8.55Z"/>
+        <path class="cls-1" d="M675.7,131.3c-.58.49-1.07,1.08-1.45,1.78l-.41-2.96h-3.82v16.02h4.29v-7.41c0-.87.11-1.59.32-2.16.21-.57.52-1.02.92-1.35.4-.33.87-.57,1.42-.72.54-.15,1.13-.22,1.76-.22h1.46v-4.55c-.91,0-1.74.14-2.5.41-.75.28-1.42.66-2,1.14Z"/>
+        <path class="cls-1" d="M700.58,133.62c-.66-1.19-1.58-2.13-2.77-2.83-1.19-.7-2.57-1.05-4.16-1.05s-3.07.37-4.31,1.1c-1.24.73-2.2,1.74-2.88,3.02-.68,1.28-1.02,2.76-1.02,4.44s.34,3.07,1.03,4.31c.69,1.24,1.65,2.2,2.89,2.89,1.24.69,2.66,1.03,4.28,1.03,1.25,0,2.38-.23,3.4-.7,1.02-.47,1.88-1.1,2.58-1.91.7-.8,1.2-1.71,1.49-2.7h-4.39c-.25.53-.64.96-1.16,1.3-.52.34-1.17.51-1.96.51s-1.47-.17-2.07-.52c-.59-.35-1.05-.85-1.38-1.49-.27-.53-.42-1.14-.47-1.83h11.81c.04-.28.06-.55.06-.81v-.71c0-1.5-.33-2.85-.99-4.04ZM689.78,136.58c.09-.5.22-.95.42-1.33.35-.68.83-1.18,1.45-1.51.61-.33,1.28-.49,2-.49,1,0,1.83.3,2.49.89.67.59,1.03,1.41,1.1,2.45h-7.46Z"/>
+      </g>
+      <g>
+        <path class="cls-1" d="M129.79,43.47h-19.79c-.74,0-1.34.6-1.35,1.34-.71,34.91-29.24,63-64.32,63-6.83,0-13.41-1.07-19.59-3.04-.47-.15-.95.2-.95.69v21.33c0,.63.43,1.18,1.05,1.32,6.27,1.44,12.79,2.2,19.49,2.2,47.51,0,86.09-38.14,86.82-85.47.01-.75-.6-1.37-1.36-1.37Z"/>
+        <path class="cls-2" d="M25.08,82.21c6.13,3.03,12.99,4.73,20.1,4.73,24.01,0,43.47-19.46,43.47-43.47S69.19,0,45.18,0,0,19.46,0,43.47v60.08c0,.5.4.9.9.9h22.16c.4,0,.72-.32.72-.72v-20.71c0-.67.7-1.11,1.29-.81ZM44.33,22.93c11.35,0,20.54,9.2,20.54,20.54s-9.2,20.54-20.54,20.54-20.54-9.2-20.54-20.54,9.2-20.54,20.54-20.54Z"/>
+      </g>
+      <g>
+        <path class="cls-2" d="M453.09,47.34c-4-2.41-9.05-3.62-15.01-3.62-4.79,0-9.29,1.06-13.37,3.14-3.84,1.96-7.03,4.68-9.51,8.08-1.31-2.33-2.96-4.3-4.9-5.88-2.14-1.73-4.61-3.06-7.33-3.97-2.73-.91-5.85-1.37-9.28-1.37-4.62,0-8.79.99-12.38,2.94-3.21,1.75-5.89,4.05-7.98,6.86l-.93-5.68c-.24-1.45-1.49-2.51-2.96-2.51h-12.34c-1.1,0-2,.9-2,2v64.59c0,1.1.9,2,2,2h15.1c1.1,0,2-.9,2-2v-34.44c0-3.67.6-6.85,1.77-9.45,1.16-2.58,2.81-4.58,4.91-5.96,2.1-1.37,4.51-2.06,7.17-2.06,4.28,0,7.49,1.38,9.52,4.09,2.07,2.76,3.12,6.81,3.12,12.04v35.78c0,1.1.9,2,2,2h15.1c1.1,0,2-.9,2-2v-34.44c0-3.67.6-6.85,1.77-9.45,1.16-2.58,2.84-4.58,4.98-5.95,2.14-1.37,4.63-2.07,7.37-2.07,4.19,0,7.33,1.38,9.32,4.09,2.03,2.76,3.06,6.81,3.06,12.04v35.78c0,1.1.9,2,2,2h14.97c1.1,0,2-.9,2-2v-37.39c0-6.57-1.03-12.19-3.06-16.7-2.04-4.54-5.11-8.07-9.12-10.48Z"/>
+        <path class="cls-2" d="M516.81,47.38l-15.72,47.41-15.72-47.41c-.41-1.23-1.55-2.06-2.85-2.06h-15.09c-1.39,0-2.36,1.38-1.88,2.69l23.71,64.59c.29.79,1.04,1.31,1.88,1.31h19.9c.84,0,1.59-.52,1.88-1.31l23.58-64.59c.48-1.3-.49-2.69-1.88-2.69h-14.96c-1.29,0-2.44.83-2.85,2.06Z"/>
+        <path class="cls-2" d="M586.39,48.21c-5.06-2.98-11.06-4.49-17.82-4.49s-13.14,1.58-18.43,4.7c-5.29,3.12-9.43,7.47-12.32,12.94-2.89,5.45-4.35,11.83-4.35,18.94s1.49,13.13,4.42,18.41c2.94,5.29,7.11,9.46,12.4,12.4,5.28,2.93,11.43,4.42,18.28,4.42,5.32,0,10.22-1.01,14.56-3,4.34-1.99,8.05-4.74,11.03-8.17,2.98-3.43,5.14-7.33,6.41-11.58l.19-.64h-19.49l-.14.28c-1.03,2.14-2.61,3.92-4.72,5.3-2.1,1.37-4.78,2.06-7.97,2.06s-6.05-.72-8.46-2.14c-2.41-1.42-4.31-3.47-5.64-6.1-1.04-2.04-1.68-4.38-1.92-6.98h49.71l.07-.42c.18-1.19.27-2.36.27-3.49v-3.02c0-6.4-1.42-12.21-4.22-17.27-2.8-5.06-6.79-9.14-11.85-12.12ZM554.46,67.65c1.42-2.76,3.4-4.83,5.89-6.16,2.51-1.34,5.27-2.02,8.21-2.02,4.05,0,7.48,1.22,10.19,3.63,2.59,2.3,4.07,5.48,4.42,9.45h-30.37c.36-1.84.91-3.48,1.65-4.9Z"/>
+        <rect class="cls-2" x="609.01" y="45.32" width="19.11" height="68.59" rx="2" ry="2"/>
+        <path class="cls-2" d="M618.72,16.02c-3.33,0-6.13,1.01-8.32,3.01-2.2,2.01-3.31,4.6-3.31,7.68s1.11,5.67,3.31,7.68c2.18,2,4.98,3.01,8.32,3.01s6.27-1.01,8.45-3.01c2.2-2.01,3.31-4.6,3.31-7.68s-1.11-5.66-3.31-7.68c-2.19-2-5.03-3.01-8.45-3.01Z"/>
+        <path class="cls-2" d="M698.32,57.69c-2.04-4.54-5.07-8.05-8.98-10.42-3.91-2.36-8.78-3.56-14.47-3.56-5.34,0-10.01,1.2-13.87,3.56-3.41,2.09-6.17,4.78-8.2,8.02l-.89-7.33c-.18-1.51-1.46-2.64-2.98-2.64h-12.25c-1.1,0-2,.9-2,2v64.59c0,1.1.9,2,2,2h15.1c1.1,0,2-.9,2-2v-34.58c0-3.66.66-6.81,1.96-9.36,1.29-2.54,3.1-4.52,5.38-5.9,2.28-1.38,4.92-2.07,7.86-2.07,4.56,0,7.97,1.38,10.14,4.1,2.2,2.76,3.31,6.8,3.31,12.03v35.78c0,1.1.9,2,2,2h14.97c1.1,0,2-.9,2-2v-37.53c0-6.57-1.03-12.18-3.06-16.7Z"/>
+        <rect class="cls-2" x="328.09" y="23.1" width="20.46" height="90.82" rx="2" ry="2"/>
+        <path class="cls-2" d="M319.54,45.34h-11.94c-1.47,0-2.72,1.06-2.96,2.51l-.34,2.07c-5.59-3.92-12.34-6.23-19.62-6.23-19.27,0-34.9,16.08-34.9,35.92s15.63,35.9,34.9,35.9c6.65,0,12.86-1.92,18.15-5.24v1.65c0,1.1.9,2,2,2h14.71c1.1,0,2-.9,2-2V47.34c0-1.1-.9-2-2-2ZM284.9,96.42c-9.67,0-16.44-7.53-16.44-16.82s6.77-16.82,16.44-16.82,16.43,7.53,16.43,16.82-6.76,16.82-16.43,16.82Z"/>
+        <path class="cls-2" d="M192.7,111.32c5.05,2.49,10.7,3.9,16.55,3.9,19.76,0,35.78-16.02,35.78-35.78s-16.02-35.78-35.78-35.78-37.19,16.02-37.19,35.78v49.45c0,.41.33.74.74.74h18.24c.33,0,.59-.27.59-.59v-17.05c0-.55.57-.91,1.07-.67ZM208.55,62.52c9.34,0,16.91,7.57,16.91,16.91s-7.57,16.91-16.91,16.91-16.91-7.57-16.91-16.91,7.57-16.91,16.91-16.91Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
+    <div class="badge-conf">Confidencial · Cimed</div>
+  </div>
+
+  <!-- hero -->
+  <div class="hero-content">
+    <div class="hero-eyebrow">Executive Summary · Proposta Estratégica</div>
+    <h1 class="hero-title">A palma da mão como<br><em>infraestrutura de marca.</em></h1>
+    <p class="hero-sub">Uma plataforma de identidade biométrica que transforma a operação e a experiência da Cimed — em 90 dias de piloto, com resultado mensurável.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openDeck()">
+        Ver proposta completa
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="btn-ghost" onclick="openModal('demo')">Agendar demo</button>
+    </div>
+  </div>
+
+  <!-- stats -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-val">+5k</div>
+      <div class="stat-label">colaboradores Cimed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">90d</div>
+      <div class="stat-label">piloto assistido</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">2</div>
+      <div class="stat-label">frentes ativas</div>
+    </div>
+  </div>
+
+  <!-- scroll hint -->
+  <div class="scroll-hint">
+    <div class="scroll-arrow">
+      <svg width="10" height="10" viewBox="0 0 10 10"><path d="M5 2v6M2 6l3 3 3-3" stroke="rgba(255,255,255,.5)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span>ou deslize</span>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     FULL DECK — apresentação completa
+══════════════════════════════════════ -->
+<div class="full-deck" id="fullDeck">
+
+  <!-- sticky header -->
+  <div class="deck-header">
+    <svg id="Camada_2" style="height:26px;width:auto;display:block" data-name="Camada 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 701.57 146.53">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #84eca6;
+      }
+
+      .cls-2 {
+        fill: #fffdf9;
+      }
+    </style>
+  </defs>
+  <g id="Camada_1-2" data-name="Camada 1">
+    <g>
+      <g>
+        <path class="cls-1" d="M414.16,130.84c-1.16-.73-2.47-1.1-3.96-1.1-1.25,0-2.29.25-3.13.75-.84.5-1.51,1.12-2.02,1.86v-9.09h-4.29v22.89h3.82l.48-2.07c.34.47.76.88,1.26,1.26.5.37,1.07.66,1.72.87.65.21,1.38.32,2.21.32,1.48,0,2.8-.36,3.94-1.08,1.14-.72,2.05-1.72,2.72-2.99.67-1.27,1-2.7,1-4.29s-.33-3.08-1-4.34c-.67-1.26-1.58-2.26-2.73-2.99ZM412.96,140.57c-.36.69-.86,1.23-1.51,1.62-.65.39-1.39.59-2.24.59s-1.56-.19-2.21-.57c-.65-.38-1.16-.93-1.53-1.64-.37-.71-.56-1.52-.56-2.43s.18-1.72.56-2.42c.37-.7.88-1.24,1.53-1.64.65-.39,1.38-.59,2.21-.59s1.59.2,2.24.59c.65.39,1.15.94,1.51,1.65.36.71.54,1.52.54,2.43s-.18,1.71-.54,2.4Z"/>
+        <rect class="cls-1" x="424.85" y="130.12" width="4.29" height="16.02"/>
+        <path class="cls-1" d="M427.02,123.1c-.76,0-1.39.23-1.89.68-.5.46-.75,1.03-.75,1.73s.25,1.28.75,1.73c.5.46,1.13.68,1.89.68s1.43-.23,1.92-.68c.5-.45.75-1.03.75-1.73s-.25-1.28-.75-1.73c-.5-.46-1.14-.68-1.92-.68Z"/>
+        <path class="cls-1" d="M448.4,130.81c-1.22-.71-2.6-1.07-4.15-1.07s-2.9.36-4.13,1.07c-1.23.71-2.2,1.7-2.91,2.96-.71,1.26-1.06,2.73-1.06,4.4s.35,3.08,1.06,4.34c.71,1.26,1.67,2.25,2.89,2.96,1.22.71,2.59,1.06,4.12,1.06s2.93-.36,4.16-1.06c1.23-.71,2.2-1.7,2.91-2.96.71-1.26,1.06-2.72,1.06-4.37s-.36-3.11-1.06-4.37c-.71-1.26-1.68-2.25-2.89-2.96ZM447.48,140.74c-.33.7-.77,1.22-1.33,1.56-.56.34-1.2.51-1.92.51-.68,0-1.3-.17-1.86-.51-.56-.34-1.01-.86-1.34-1.56-.33-.7-.49-1.57-.49-2.61s.16-1.9.49-2.59c.33-.69.78-1.21,1.35-1.56.57-.35,1.2-.52,1.88-.52s1.33.17,1.89.52c.56.35,1.01.87,1.33,1.56.33.69.49,1.55.49,2.59s-.16,1.91-.49,2.61Z"/>
+        <path class="cls-1" d="M482.28,130.58c-.93-.56-2.1-.84-3.5-.84-1.12,0-2.16.24-3.11.73-.95.49-1.73,1.17-2.32,2.03-.32-.61-.73-1.12-1.22-1.53-.5-.4-1.07-.71-1.7-.92-.64-.21-1.36-.32-2.16-.32-1.08,0-2.04.23-2.88.68-.84.46-1.51,1.06-2.02,1.83l-.35-2.13h-3.78v16.02h4.29v-8.52c0-.89.14-1.65.43-2.29.29-.64.69-1.12,1.21-1.46.52-.34,1.11-.51,1.76-.51,1.06,0,1.84.34,2.35,1.02s.76,1.65.76,2.92v8.84h4.29v-8.52c0-.89.14-1.65.43-2.29.29-.64.69-1.12,1.22-1.46.53-.34,1.13-.51,1.81-.51,1.04,0,1.81.34,2.3,1.02.5.68.75,1.65.75,2.92v8.84h4.26v-9.22c0-1.55-.24-2.85-.72-3.91s-1.18-1.87-2.11-2.43Z"/>
+        <path class="cls-1" d="M504.18,130.79c-1.19-.7-2.57-1.05-4.16-1.05s-3.07.37-4.31,1.1c-1.24.73-2.2,1.74-2.88,3.02-.68,1.28-1.02,2.76-1.02,4.44s.34,3.07,1.03,4.31c.69,1.24,1.65,2.2,2.89,2.89,1.24.69,2.66,1.03,4.28,1.03,1.25,0,2.38-.23,3.4-.7,1.02-.47,1.88-1.1,2.58-1.91.7-.8,1.2-1.71,1.49-2.7h-4.39c-.25.53-.64.96-1.16,1.3-.52.34-1.17.51-1.96.51s-1.47-.17-2.07-.52c-.59-.35-1.05-.85-1.38-1.49-.27-.53-.42-1.14-.47-1.83h11.81c.04-.28.06-.55.06-.81v-.71c0-1.5-.33-2.85-.99-4.04-.66-1.19-1.58-2.13-2.77-2.83ZM496.15,136.58c.09-.5.22-.95.42-1.33.35-.68.83-1.18,1.45-1.51.61-.33,1.28-.49,2-.49,1,0,1.83.3,2.49.89.67.59,1.03,1.41,1.1,2.45h-7.46Z"/>
+        <path class="cls-1" d="M520.33,125.77h-3.82l-.48,4.36h-2.73v3.59h2.73v6.8c0,1.42.23,2.54.7,3.35.47.82,1.12,1.4,1.95,1.75.84.35,1.82.52,2.94.52h2.89v-3.66h-2.1c-.76,0-1.3-.14-1.62-.41-.32-.28-.48-.77-.48-1.49v-6.87h4.23v-3.59h-4.23v-4.36Z"/>
+        <path class="cls-1" d="M537.04,131.3c-.58.49-1.07,1.08-1.45,1.78l-.41-2.96h-3.82v16.02h4.29v-7.41c0-.87.11-1.59.32-2.16.21-.57.52-1.02.92-1.35.4-.33.87-.57,1.42-.72.54-.15,1.13-.22,1.76-.22h1.46v-4.55c-.91,0-1.74.14-2.5.41-.75.28-1.42.66-2,1.14Z"/>
+        <path class="cls-1" d="M549.81,123.1c-.76,0-1.39.23-1.89.68-.5.46-.75,1.03-.75,1.73s.25,1.28.75,1.73c.5.46,1.13.68,1.89.68s1.43-.23,1.92-.68c.5-.45.75-1.03.75-1.73s-.25-1.28-.75-1.73c-.5-.46-1.14-.68-1.92-.68Z"/>
+        <rect class="cls-1" x="547.65" y="130.12" width="4.29" height="16.02"/>
+        <path class="cls-1" d="M565.18,133.99c.58-.37,1.24-.56,1.99-.56.83,0,1.54.21,2.15.64.6.42,1,1.01,1.19,1.75h4.55c-.38-1.89-1.27-3.37-2.67-4.45-1.4-1.08-3.13-1.62-5.18-1.62-1.61,0-3.04.37-4.29,1.1-1.25.73-2.23,1.73-2.92,2.99-.7,1.26-1.05,2.72-1.05,4.37s.35,3.04,1.05,4.29c.7,1.25,1.67,2.24,2.92,2.96,1.25.72,2.68,1.08,4.29,1.08,2.03,0,3.76-.55,5.17-1.64,1.41-1.09,2.3-2.56,2.69-4.4h-4.55c-.13.51-.35.94-.67,1.29-.32.35-.7.62-1.16.81-.46.19-.96.29-1.51.29s-1.07-.11-1.54-.32c-.48-.21-.89-.53-1.22-.94-.34-.41-.6-.91-.79-1.49-.19-.58-.29-1.24-.29-1.99,0-.98.16-1.82.49-2.53.33-.71.78-1.25,1.37-1.62Z"/>
+        <path class="cls-1" d="M597.6,128.69c0-.66.14-1.12.43-1.38.29-.26.77-.4,1.45-.4h1.34v-3.66h-1.97c-1.12,0-2.1.18-2.94.54-.84.36-1.48.93-1.92,1.72-.45.78-.67,1.84-.67,3.18v1.43h-2.19v3.59h2.19v12.43h4.29v-12.43h3.47v-3.59h-3.47v-1.43Z"/>
+        <path class="cls-1" d="M618.68,138.68c0,.91-.16,1.68-.49,2.3-.33.63-.77,1.1-1.32,1.43-.55.33-1.19.49-1.91.49-1.12,0-1.95-.33-2.49-.98-.54-.66-.81-1.63-.81-2.93v-8.87h-4.29v9.32c0,1.55.24,2.84.73,3.9.49,1.05,1.19,1.84,2.11,2.38.92.54,2.03.81,3.32.81s2.33-.27,3.24-.81c.91-.54,1.6-1.27,2.07-2.18l.35,2.61h3.75v-16.02h-4.26v8.55Z"/>
+        <path class="cls-1" d="M636.23,125.77h-3.82l-.48,4.36h-2.73v3.59h2.73v6.8c0,1.42.23,2.54.7,3.35.47.82,1.12,1.4,1.95,1.75.84.35,1.82.52,2.94.52h2.89v-3.66h-2.1c-.76,0-1.3-.14-1.62-.41-.32-.28-.48-.77-.48-1.49v-6.87h4.23v-3.59h-4.23v-4.36Z"/>
+        <path class="cls-1" d="M658.39,138.68c0,.91-.16,1.68-.49,2.3-.33.63-.77,1.1-1.32,1.43-.55.33-1.19.49-1.91.49-1.12,0-1.95-.33-2.49-.98-.54-.66-.81-1.63-.81-2.93v-8.87h-4.29v9.32c0,1.55.24,2.84.73,3.9.49,1.05,1.19,1.84,2.11,2.38.92.54,2.03.81,3.32.81s2.33-.27,3.24-.81c.91-.54,1.6-1.27,2.07-2.18l.35,2.61h3.75v-16.02h-4.26v8.55Z"/>
+        <path class="cls-1" d="M675.7,131.3c-.58.49-1.07,1.08-1.45,1.78l-.41-2.96h-3.82v16.02h4.29v-7.41c0-.87.11-1.59.32-2.16.21-.57.52-1.02.92-1.35.4-.33.87-.57,1.42-.72.54-.15,1.13-.22,1.76-.22h1.46v-4.55c-.91,0-1.74.14-2.5.41-.75.28-1.42.66-2,1.14Z"/>
+        <path class="cls-1" d="M700.58,133.62c-.66-1.19-1.58-2.13-2.77-2.83-1.19-.7-2.57-1.05-4.16-1.05s-3.07.37-4.31,1.1c-1.24.73-2.2,1.74-2.88,3.02-.68,1.28-1.02,2.76-1.02,4.44s.34,3.07,1.03,4.31c.69,1.24,1.65,2.2,2.89,2.89,1.24.69,2.66,1.03,4.28,1.03,1.25,0,2.38-.23,3.4-.7,1.02-.47,1.88-1.1,2.58-1.91.7-.8,1.2-1.71,1.49-2.7h-4.39c-.25.53-.64.96-1.16,1.3-.52.34-1.17.51-1.96.51s-1.47-.17-2.07-.52c-.59-.35-1.05-.85-1.38-1.49-.27-.53-.42-1.14-.47-1.83h11.81c.04-.28.06-.55.06-.81v-.71c0-1.5-.33-2.85-.99-4.04ZM689.78,136.58c.09-.5.22-.95.42-1.33.35-.68.83-1.18,1.45-1.51.61-.33,1.28-.49,2-.49,1,0,1.83.3,2.49.89.67.59,1.03,1.41,1.1,2.45h-7.46Z"/>
+      </g>
+      <g>
+        <path class="cls-1" d="M129.79,43.47h-19.79c-.74,0-1.34.6-1.35,1.34-.71,34.91-29.24,63-64.32,63-6.83,0-13.41-1.07-19.59-3.04-.47-.15-.95.2-.95.69v21.33c0,.63.43,1.18,1.05,1.32,6.27,1.44,12.79,2.2,19.49,2.2,47.51,0,86.09-38.14,86.82-85.47.01-.75-.6-1.37-1.36-1.37Z"/>
+        <path class="cls-2" d="M25.08,82.21c6.13,3.03,12.99,4.73,20.1,4.73,24.01,0,43.47-19.46,43.47-43.47S69.19,0,45.18,0,0,19.46,0,43.47v60.08c0,.5.4.9.9.9h22.16c.4,0,.72-.32.72-.72v-20.71c0-.67.7-1.11,1.29-.81ZM44.33,22.93c11.35,0,20.54,9.2,20.54,20.54s-9.2,20.54-20.54,20.54-20.54-9.2-20.54-20.54,9.2-20.54,20.54-20.54Z"/>
+      </g>
+      <g>
+        <path class="cls-2" d="M453.09,47.34c-4-2.41-9.05-3.62-15.01-3.62-4.79,0-9.29,1.06-13.37,3.14-3.84,1.96-7.03,4.68-9.51,8.08-1.31-2.33-2.96-4.3-4.9-5.88-2.14-1.73-4.61-3.06-7.33-3.97-2.73-.91-5.85-1.37-9.28-1.37-4.62,0-8.79.99-12.38,2.94-3.21,1.75-5.89,4.05-7.98,6.86l-.93-5.68c-.24-1.45-1.49-2.51-2.96-2.51h-12.34c-1.1,0-2,.9-2,2v64.59c0,1.1.9,2,2,2h15.1c1.1,0,2-.9,2-2v-34.44c0-3.67.6-6.85,1.77-9.45,1.16-2.58,2.81-4.58,4.91-5.96,2.1-1.37,4.51-2.06,7.17-2.06,4.28,0,7.49,1.38,9.52,4.09,2.07,2.76,3.12,6.81,3.12,12.04v35.78c0,1.1.9,2,2,2h15.1c1.1,0,2-.9,2-2v-34.44c0-3.67.6-6.85,1.77-9.45,1.16-2.58,2.84-4.58,4.98-5.95,2.14-1.37,4.63-2.07,7.37-2.07,4.19,0,7.33,1.38,9.32,4.09,2.03,2.76,3.06,6.81,3.06,12.04v35.78c0,1.1.9,2,2,2h14.97c1.1,0,2-.9,2-2v-37.39c0-6.57-1.03-12.19-3.06-16.7-2.04-4.54-5.11-8.07-9.12-10.48Z"/>
+        <path class="cls-2" d="M516.81,47.38l-15.72,47.41-15.72-47.41c-.41-1.23-1.55-2.06-2.85-2.06h-15.09c-1.39,0-2.36,1.38-1.88,2.69l23.71,64.59c.29.79,1.04,1.31,1.88,1.31h19.9c.84,0,1.59-.52,1.88-1.31l23.58-64.59c.48-1.3-.49-2.69-1.88-2.69h-14.96c-1.29,0-2.44.83-2.85,2.06Z"/>
+        <path class="cls-2" d="M586.39,48.21c-5.06-2.98-11.06-4.49-17.82-4.49s-13.14,1.58-18.43,4.7c-5.29,3.12-9.43,7.47-12.32,12.94-2.89,5.45-4.35,11.83-4.35,18.94s1.49,13.13,4.42,18.41c2.94,5.29,7.11,9.46,12.4,12.4,5.28,2.93,11.43,4.42,18.28,4.42,5.32,0,10.22-1.01,14.56-3,4.34-1.99,8.05-4.74,11.03-8.17,2.98-3.43,5.14-7.33,6.41-11.58l.19-.64h-19.49l-.14.28c-1.03,2.14-2.61,3.92-4.72,5.3-2.1,1.37-4.78,2.06-7.97,2.06s-6.05-.72-8.46-2.14c-2.41-1.42-4.31-3.47-5.64-6.1-1.04-2.04-1.68-4.38-1.92-6.98h49.71l.07-.42c.18-1.19.27-2.36.27-3.49v-3.02c0-6.4-1.42-12.21-4.22-17.27-2.8-5.06-6.79-9.14-11.85-12.12ZM554.46,67.65c1.42-2.76,3.4-4.83,5.89-6.16,2.51-1.34,5.27-2.02,8.21-2.02,4.05,0,7.48,1.22,10.19,3.63,2.59,2.3,4.07,5.48,4.42,9.45h-30.37c.36-1.84.91-3.48,1.65-4.9Z"/>
+        <rect class="cls-2" x="609.01" y="45.32" width="19.11" height="68.59" rx="2" ry="2"/>
+        <path class="cls-2" d="M618.72,16.02c-3.33,0-6.13,1.01-8.32,3.01-2.2,2.01-3.31,4.6-3.31,7.68s1.11,5.67,3.31,7.68c2.18,2,4.98,3.01,8.32,3.01s6.27-1.01,8.45-3.01c2.2-2.01,3.31-4.6,3.31-7.68s-1.11-5.66-3.31-7.68c-2.19-2-5.03-3.01-8.45-3.01Z"/>
+        <path class="cls-2" d="M698.32,57.69c-2.04-4.54-5.07-8.05-8.98-10.42-3.91-2.36-8.78-3.56-14.47-3.56-5.34,0-10.01,1.2-13.87,3.56-3.41,2.09-6.17,4.78-8.2,8.02l-.89-7.33c-.18-1.51-1.46-2.64-2.98-2.64h-12.25c-1.1,0-2,.9-2,2v64.59c0,1.1.9,2,2,2h15.1c1.1,0,2-.9,2-2v-34.58c0-3.66.66-6.81,1.96-9.36,1.29-2.54,3.1-4.52,5.38-5.9,2.28-1.38,4.92-2.07,7.86-2.07,4.56,0,7.97,1.38,10.14,4.1,2.2,2.76,3.31,6.8,3.31,12.03v35.78c0,1.1.9,2,2,2h14.97c1.1,0,2-.9,2-2v-37.53c0-6.57-1.03-12.18-3.06-16.7Z"/>
+        <rect class="cls-2" x="328.09" y="23.1" width="20.46" height="90.82" rx="2" ry="2"/>
+        <path class="cls-2" d="M319.54,45.34h-11.94c-1.47,0-2.72,1.06-2.96,2.51l-.34,2.07c-5.59-3.92-12.34-6.23-19.62-6.23-19.27,0-34.9,16.08-34.9,35.92s15.63,35.9,34.9,35.9c6.65,0,12.86-1.92,18.15-5.24v1.65c0,1.1.9,2,2,2h14.71c1.1,0,2-.9,2-2V47.34c0-1.1-.9-2-2-2ZM284.9,96.42c-9.67,0-16.44-7.53-16.44-16.82s6.77-16.82,16.44-16.82,16.43,7.53,16.43,16.82-6.76,16.82-16.43,16.82Z"/>
+        <path class="cls-2" d="M192.7,111.32c5.05,2.49,10.7,3.9,16.55,3.9,19.76,0,35.78-16.02,35.78-35.78s-16.02-35.78-35.78-35.78-37.19,16.02-37.19,35.78v49.45c0,.41.33.74.74.74h18.24c.33,0,.59-.27.59-.59v-17.05c0-.55.57-.91,1.07-.67ZM208.55,62.52c9.34,0,16.91,7.57,16.91,16.91s-7.57,16.91-16.91,16.91-16.91-7.57-16.91-16.91,7.57-16.91,16.91-16.91Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
+    <button class="btn-close" onclick="window.location.href='https://murilosecco.github.io/palmvein-cimed/narrativa.html'">← Voltar ao resumo</button>
+  </div>
+
+  <div class="deck-body">
+
+    <!-- SEÇÃO 1: CONTEXTO -->
+    <div class="deck-section-title">O contexto</div>
+    <div class="card-grid" style="margin-bottom:14px">
+
+      <!-- flip card 1: Cimed hoje / números -->
+      <div class="flip-wrap deck-card-enter" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <!-- frente -->
+          <div class="flip-front face-navy card-pad" style="position:relative">
+            <div class="glow-dot"></div>
+            <div class="c-label lbl-mint">A Cimed hoje</div>
+            <div class="c-title t-white">Uma empresa que cresce mais rápido do que sua infraestrutura</div>
+            <div class="c-body b-dim" style="margin-top:8px">+5.000 colaboradores, 26 CDs, 650+ eventos/ano — cada processo manual é um ponto de fricção.</div>
+            <div class="flip-hint flip-hint-white">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="rgba(255,255,255,.4)"><path d="M5 1a4 4 0 100 8A4 4 0 005 1zm0 6.5a.75.75 0 110-1.5.75.75 0 010 1.5zm.5-2.5H4.5V2.5h1v2.5z"/></svg>
+              toque para mais
+            </div>
+          </div>
+          <!-- verso -->
+          <div class="flip-back face-white card-pad">
+            <div class="c-label lbl-blue">Escala atual</div>
+            <div class="c-title t-navy" style="margin-bottom:12px">Os números da Cimed</div>
+            <div class="back-list">
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray"><strong>+5.000</strong> colaboradores diretos</div></div>
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray"><strong>26</strong> centros de distribuição nacionais</div></div>
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray"><strong>650+</strong> eventos corporativos por ano</div></div>
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Meta de <strong>R$ 10 bilhões</strong> até 2030</div></div>
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">98% dos pontos de venda do Brasil</div></div>
+            </div>
+            <div class="flip-hint flip-hint-navy">↺ voltar</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- flip card 2: O problema -->
+      <div class="flip-wrap deck-card-enter" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front face-white card-pad">
+            <div class="c-label lbl-blue">O problema</div>
+            <div class="c-title t-navy">Sistema de acesso do século passado</div>
+            <div class="tension" style="margin-top:10px">
+              <p>Uma empresa que quer R$ 10bi até 2030 não pode ter um sistema de acesso do século passado.</p>
+            </div>
+            <div class="c-body b-gray" style="margin-top:10px;font-size:11px">Crachá, senha e ponto manual = fraude, fricção e risco operacional em escala.</div>
+            <div class="flip-hint flip-hint-navy">toque para ver riscos</div>
+          </div>
+          <div class="flip-back face-navy card-pad" style="position:relative">
+            <div class="glow-dot"></div>
+            <div class="c-label lbl-mint">Riscos identificados</div>
+            <div class="back-list" style="margin-top:8px">
+              <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Fraude de ponto e acesso não autorizado</div></div>
+              <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Falta de rastreabilidade em áreas críticas</div></div>
+              <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Risco de conformidade regulatória (GMP)</div></div>
+              <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Experiência de evento abaixo do nível da marca</div></div>
+            </div>
+            <div class="flip-hint flip-hint-white">↺ voltar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 2: SOLUÇÃO -->
+    <div class="deck-section-title">A solução</div>
+    <div class="card-grid" style="margin-bottom:14px">
+
+      <!-- flip: o que é PalmVein -->
+      <div class="flip-wrap tall deck-card-enter" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front face-navy card-pad" style="position:relative">
+            <div class="glow-dot"></div>
+            <div class="c-label lbl-mint">O que é a PalmVein</div>
+            <div class="c-title t-white">Biometria vascular: o identificador que não pode ser copiado</div>
+            <div class="c-body b-dim" style="margin-top:8px">Leitura do mapa vascular interno da palma — único, invisível e permanente. Sem contato físico. Sem dispositivo.</div>
+            <div style="margin-top:14px;display:inline-block;background:var(--mint);color:var(--navy);font-family:var(--fd);font-size:12px;font-weight:700;padding:6px 14px;border-radius:980px">Você é o seu token.</div>
+            <div class="flip-hint flip-hint-white">toque para ver diferenciais</div>
+          </div>
+          <div class="flip-back face-white card-pad">
+            <div class="c-label lbl-blue">Diferenciais técnicos</div>
+            <div class="back-list" style="margin-top:8px">
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Sem contato físico — leitura em milissegundos</div></div>
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Identidade intransferível — impossível de copiar</div></div>
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Alta precisão — mapa vascular único por pessoa</div></div>
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Anatel homologado</div></div>
+              <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Parceria Mastercard Click2Pay</div></div>
+            </div>
+            <div class="flip-hint flip-hint-navy">↺ voltar</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- flip: duas frentes -->
+      <div class="flip-wrap tall deck-card-enter" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front face-white card-pad">
+            <div class="c-label lbl-blue">Duas frentes</div>
+            <div class="c-title t-navy">Operação + experiência de marca</div>
+            <div class="benefit" style="margin-top:12px">
+              <div class="bicon" style="background:var(--navy)">🔒</div>
+              <div><div class="bt">Frente 1 — Segurança</div><div class="bd">Controle de acesso, jornada, logística e conformidade</div></div>
+            </div>
+            <div class="benefit" style="margin-top:10px">
+              <div class="bicon" style="background:var(--blue)">✦</div>
+              <div><div class="bt">Frente 2 — Marketing</div><div class="bd">Eventos, convenções, credenciamento VIP, ativações</div></div>
+            </div>
+            <div class="flip-hint flip-hint-navy">toque para ver aplicações</div>
+          </div>
+          <div class="flip-back face-navy card-pad" style="position:relative">
+            <div class="glow-dot"></div>
+            <div class="c-label lbl-mint">Aplicações Cimed</div>
+            <div class="frente-grid">
+              <div class="frente-item"><div class="fi-title">Fábricas</div><div class="fi-desc">Acesso restrito e rastreável</div></div>
+              <div class="frente-item"><div class="fi-title">CDs</div><div class="fi-desc">Logística e docas controladas</div></div>
+              <div class="frente-item"><div class="fi-title">RH</div><div class="fi-desc">Ponto sem fraude</div></div>
+              <div class="frente-item"><div class="fi-title">Eventos</div><div class="fi-desc">Check-in VIP e ativações</div></div>
+              <div class="frente-item"><div class="fi-title">Convenções</div><div class="fi-desc">Credenciamento biométrico</div></div>
+              <div class="frente-item"><div class="fi-title">Parceiros</div><div class="fi-desc">Acesso e leads em tempo real</div></div>
+            </div>
+            <div class="flip-hint flip-hint-white">↺ voltar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 3: PILOTO -->
+    <div class="deck-section-title">O piloto</div>
+    <div class="card-grid" style="margin-bottom:14px">
+
+      <!-- flip: piloto -->
+      <div class="flip-wrap tall deck-card-enter span2" onclick="this.classList.toggle('flipped')" style="height:200px">
+        <div class="flip-inner">
+          <div class="flip-front face-navy card-pad" style="position:relative">
+            <div class="glow-dot"></div>
+            <div class="c-label lbl-mint">Cimed Future Experience — 90 dias assistidos</div>
+            <div class="metric-row">
+              <div class="m-dot"><div class="m-val">1</div><div class="m-lbl">Unidade Fabril</div></div>
+              <div class="m-dot"><div class="m-val">1</div><div class="m-lbl">Centro de Distribuição</div></div>
+              <div class="m-dot"><div class="m-val">1</div><div class="m-lbl">Evento Corporativo</div></div>
+            </div>
+            <div class="c-body b-dim" style="margin-top:14px;font-size:11px">Operação assistida com relatório de ROI ao final dos 90 dias.</div>
+            <div class="flip-hint flip-hint-white">toque para ver indicadores</div>
+          </div>
+          <div class="flip-back face-white card-pad">
+            <div class="c-label lbl-blue">Indicadores do piloto</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <div>
+                <div style="font-family:var(--fd);font-size:10px;font-weight:700;color:var(--navy);opacity:.5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Operação</div>
+                <div class="back-list">
+                  <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray" style="font-size:11px">Tempo de acesso</div></div>
+                  <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray" style="font-size:11px">Redução de fraudes</div></div>
+                  <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray" style="font-size:11px">Produtividade</div></div>
+                  <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray" style="font-size:11px">Conformidade</div></div>
+                </div>
+              </div>
+              <div>
+                <div style="font-family:var(--fd);font-size:10px;font-weight:700;color:var(--navy);opacity:.5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Eventos</div>
+                <div class="back-list">
+                  <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-gray" style="font-size:11px">Credenciamento</div></div>
+                  <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-gray" style="font-size:11px">Engajamento</div></div>
+                  <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-gray" style="font-size:11px">Participação</div></div>
+                  <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-gray" style="font-size:11px">Satisfação NPS</div></div>
+                </div>
+              </div>
+            </div>
+            <div class="flip-hint flip-hint-navy">↺ voltar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO 4: RESULTADO -->
+    <div class="deck-section-title">O que a Cimed ganha</div>
+    <div class="card-grid" style="margin-bottom:14px">
+      <div class="flip-wrap deck-card-enter" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front face-white card-pad">
+            <div class="c-label lbl-blue">Posicionamento</div>
+            <div class="c-title t-navy">A primeira farmacêutica brasileira com biometria vascular em larga escala</div>
+            <div class="c-body b-gray" style="margin-top:8px;font-size:11px">Mídia espontânea, employer branding e diferenciação competitiva inegociável.</div>
+            <div class="flip-hint flip-hint-navy">toque para ver impacto</div>
+          </div>
+          <div class="flip-back face-mint card-pad">
+            <div class="c-label lbl-navy">Impacto de marca</div>
+            <div class="back-list" style="margin-top:8px">
+              <div class="back-item"><div class="bi-dot" style="background:var(--navy)"></div><div class="bi-text b-navy">Cultura de inovação interna</div></div>
+              <div class="back-item"><div class="bi-dot" style="background:var(--navy)"></div><div class="bi-text b-navy">Mídia espontânea nas convenções</div></div>
+              <div class="back-item"><div class="bi-dot" style="background:var(--navy)"></div><div class="bi-text b-navy">Employer branding premium</div></div>
+              <div class="back-item"><div class="bi-dot" style="background:var(--navy)"></div><div class="bi-text b-navy">Diferenciação competitiva no setor</div></div>
+            </div>
+            <div class="flip-hint flip-hint-navy">↺ voltar</div>
+          </div>
+        </div>
+      </div>
+      <div class="flip-wrap deck-card-enter" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front face-white card-pad">
+            <div class="c-label lbl-blue">Eficiência</div>
+            <div class="c-title t-navy">ROI direto em operação</div>
+            <div class="c-body b-gray" style="margin-top:8px;font-size:11px">Fim da fraude de ponto, acesso rastreável e conformidade regulatória — mensuráveis desde o dia 1.</div>
+            <div class="flip-hint flip-hint-navy">toque para ver ganhos</div>
+          </div>
+          <div class="flip-back face-navy card-pad" style="position:relative">
+            <div class="glow-dot"></div>
+            <div class="c-label lbl-mint">Ganhos operacionais</div>
+            <div class="back-list" style="margin-top:8px">
+              <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Zero fraude de ponto nos CDs</div></div>
+              <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Rastreabilidade total em áreas GMP</div></div>
+              <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Acesso condicionado a certificações</div></div>
+              <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Auditoria automática de acessos</div></div>
+            </div>
+            <div class="flip-hint flip-hint-white">↺ voltar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA FINAL -->
+    <div class="cta-card deck-card-enter">
+      <div class="cta-heading">Pronto para ver a palma em ação?</div>
+      <div class="cta-sub">Demonstração ao vivo na Cimed — 30 minutos, sem compromisso, resultado imediato.</div>
+      <div class="cta-row">
+        <div class="cta-contact">
+          <div class="cn">Rodrigo Carvalho — Founder & CEO</div>
+          <div class="cp">+55 16 99789-0243 · @rodrigoirroba</div>
+        </div>
+        <a class="btn-dark" href="tel:+5516997890243">
+          Agendar demo
+          <span class="bdot">›</span>
+        </a>
+      </div>
+    </div>
+  </div><!-- /deck-body -->
+
+  <div class="deck-footer">
+    <div class="df-copy">© 2025 PalmVein · Confidencial</div>
+    <div class="df-contacts">
+      <div class="dfc"><strong>Rodrigo Carvalho</strong></div>
+      <div class="dsep"></div>
+      <div class="dfc">+55 16 99789-0243</div>
+      <div class="dsep"></div>
+      <div class="dfc">@rodrigoirroba</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════
+     MODAL: Agendar demo
+══════════════════════════════════════ -->
+<div class="modal-overlay" id="modalDemo" onclick="if(event.target===this)closeModal('demo')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Agendar demonstração</div>
+      <button class="modal-close" onclick="closeModal('demo')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">O que você vai ver</div>
+        <div class="modal-list">
+          <div class="ml-item"><div class="ml-check">✓</div>Leitura biométrica ao vivo — menos de 1 segundo</div>
+          <div class="ml-item"><div class="ml-check">✓</div>Controle de acesso em tempo real</div>
+          <div class="ml-item"><div class="ml-check">✓</div>Painel de indicadores operacionais</div>
+          <div class="ml-item"><div class="ml-check">✓</div>Simulação de evento com credenciamento</div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">30 minutos · sem compromisso</div>
+        <p>A demonstração acontece nas suas instalações ou na nossa operação. Trazemos o hardware, você vê funcionando.</p>
+      </div>
+      <a class="btn-dark" href="tel:+5516997890243" style="width:100%;justify-content:center;border-radius:14px;padding:14px">
+        Ligar agora · +55 16 99789-0243
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ── DECK open/close ──
+function openDeck(){
+  // redirect to narrative
+window.location.href='https://murilosecco.github.io/palmvein-cimed/narrativa.html';
+  const deck=document.getElementById('fullDeck');
+  deck.classList.add('open');
+  window.scrollTo(0,0);
+  // trigger card entrance animations
+  setTimeout(()=>{
+    const cards=deck.querySelectorAll('.deck-card-enter');
+    cards.forEach((c,i)=>{
+      setTimeout(()=>c.classList.add('visible'),i*80);
+    });
+  },100);
+}
+
+function closeDeck(){
+  document.getElementById('fullDeck').classList.remove('open');
+  document.getElementById('teaser').style.display='flex';
+  window.scrollTo(0,0);
+}
+
+// ── MODAL ──
+function openModal(id){
+  document.getElementById('modal'+id.charAt(0).toUpperCase()+id.slice(1)).classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(id){
+  document.getElementById('modal'+id.charAt(0).toUpperCase()+id.slice(1)).classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// keyboard close
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.modal-overlay.open').forEach(m=>m.classList.remove('open'));
+    document.body.style.overflow='';
+  }
+});
+</script>
+</body>
+</html>
