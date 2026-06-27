@@ -726,7 +726,7 @@ body{
 /* ── SCROLL VIDEO: scene-turn ── */
 .scene-turn-wrapper {
   position: relative;
-  height: 300vh; /* 3x viewport = bastante espaço de scroll */
+  height: 500vh; /* 5x viewport = mais espaço para o vídeo se desenvolver */
 }
 .scene-turn {
   background-color: #060e22;
@@ -1214,11 +1214,9 @@ document.addEventListener('keydown', e => {
 // ── SCROLL-DRIVEN VIDEO ──
 (function() {
   const wrapper = document.getElementById('turnWrapper');
-  const section = document.getElementById('turnScene');
   const video   = document.getElementById('scrollVideo');
   if (!wrapper || !video) return;
 
-  // Espera metadados carregarem para saber a duração
   function initScrollVideo() {
     if (!video.duration) {
       video.addEventListener('loadedmetadata', initScrollVideo, { once: true });
@@ -1228,21 +1226,24 @@ document.addEventListener('keydown', e => {
     let ticking = false;
 
     function updateVideo() {
-      const wRect   = wrapper.getBoundingClientRect();
-      const wHeight = wrapper.offsetHeight;
-      const vH      = window.innerHeight;
+      const vH       = window.innerHeight;
+      const wTop     = wrapper.getBoundingClientRect().top;
+      const wHeight  = wrapper.offsetHeight;
 
-      // Progresso: 0 quando o topo da wrapper entra na viewport
-      //            1 quando o fundo da wrapper sai da viewport
-      const scrolled = -wRect.top;            // quanto já scrollamos dentro da wrapper
-      const scrollable = wHeight - vH;        // total scrollável
-      const progress = Math.max(0, Math.min(1, scrolled / scrollable));
+      // scrolled = quanto o usuário já rolou DENTRO da wrapper
+      // começa em 0 quando o topo da wrapper toca o topo da viewport
+      // termina em (wHeight - vH) quando o fundo da wrapper sai da viewport
+      const scrolled   = Math.max(0, -wTop);
+      const scrollable = wHeight - vH;
 
-      // Mapear progresso → currentTime do vídeo
+      // progress 0→1 ao longo de toda a wrapper
+      const progress = Math.min(1, scrolled / scrollable);
+
+      // Mapear: scroll no início da wrapper → frame 0 do vídeo
+      //         scroll no final  da wrapper → último frame do vídeo
       const targetTime = progress * video.duration;
 
-      // Só atualizar se a diferença for perceptível (evita micro-jank)
-      if (Math.abs(video.currentTime - targetTime) > 0.01) {
+      if (Math.abs(video.currentTime - targetTime) > 0.016) {
         video.currentTime = targetTime;
       }
 
@@ -1256,11 +1257,9 @@ document.addEventListener('keydown', e => {
       }
     }, { passive: true });
 
-    // Estado inicial
     updateVideo();
   }
 
-  // Forçar load do vídeo para ter metadados disponíveis
   video.load();
   initScrollVideo();
 })();
