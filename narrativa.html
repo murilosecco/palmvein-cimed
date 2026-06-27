@@ -1010,68 +1010,68 @@ document.addEventListener('keydown', e => {
 })();
 
 
+
+
 // ── DRAG TO DISMISS: bottom sheet ──
 (function() {
-  const sheet   = document.getElementById('bsSheet');
-  const overlay = document.getElementById('bsOverlay');
+  var sheet   = document.getElementById('bsSheet');
+  var overlay = document.getElementById('bsOverlay');
   if (!sheet || !overlay) return;
 
-  let startY    = 0;
-  let currentY  = 0;
-  let dragging  = false;
-  const THRESHOLD = 120; // px para fechar
+  var startY = 0;
+  var dy     = 0;
+  var active = false;
 
-  function onStart(e) {
-    // Só iniciar se tocou no handle ou no sheet (não nos botões)
-    const target = e.target;
-    if (target.tagName === 'A' || target.tagName === 'BUTTON') return;
-    dragging = true;
-    startY   = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-    sheet.classList.add('dragging');
+  function start(clientY) {
+    active = true;
+    startY = clientY;
+    dy     = 0;
     sheet.style.transition = 'none';
   }
 
-  function onMove(e) {
-    if (!dragging) return;
-    currentY = (e.type === 'touchmove' ? e.touches[0].clientY : e.clientY) - startY;
-    if (currentY < 0) currentY = 0; // não sobe
-    sheet.style.transform = `translateY(${currentY}px)`;
-    // Escurecer overlay proporcionalmente
-    const ratio = Math.max(0, 1 - currentY / (THRESHOLD * 2));
-    overlay.style.background = `rgba(0,0,0,${(0.6 * ratio).toFixed(2)})`;
+  function move(clientY) {
+    if (!active) return;
+    dy = clientY - startY;
+    if (dy < 0) dy = 0;
+    sheet.style.transform = 'translateY(' + dy + 'px)';
+    var alpha = Math.max(0, 0.6 * (1 - dy / 240));
+    overlay.style.background = 'rgba(0,0,0,' + alpha.toFixed(2) + ')';
   }
 
-  function onEnd() {
-    if (!dragging) return;
-    dragging = false;
-    sheet.classList.remove('dragging');
+  function end() {
+    if (!active) return;
+    active = false;
     sheet.style.transition = '';
 
-    if (currentY > THRESHOLD) {
-      // Fechar
-      sheet.style.transform = `translateY(100%)`;
+    if (dy > 100) {
+      sheet.style.transform = 'translateY(100%)';
       overlay.style.background = '';
-      setTimeout(() => {
+      setTimeout(function() {
         closeContact();
         sheet.style.transform = '';
-      }, 320);
+      }, 350);
     } else {
-      // Voltar ao lugar
       sheet.style.transform = '';
       overlay.style.background = '';
     }
-    currentY = 0;
+    dy = 0;
   }
 
-  // Touch
-  sheet.addEventListener('touchstart', onStart, { passive: true });
-  sheet.addEventListener('touchmove',  onMove,  { passive: true });
-  sheet.addEventListener('touchend',   onEnd);
+  // Touch — não-passive para poder controlar
+  sheet.addEventListener('touchstart', function(e) {
+    // Não iniciar em links/botões
+    if (e.target.closest('a') || e.target.closest('button')) return;
+    start(e.touches[0].clientY);
+  }, { passive: true });
 
-  // Mouse (desktop)
-  sheet.addEventListener('mousedown', onStart);
-  window.addEventListener('mousemove', onMove);
-  window.addEventListener('mouseup',   onEnd);
+  sheet.addEventListener('touchmove', function(e) {
+    if (!active) return;
+    e.preventDefault(); // evita scroll da página durante drag
+    move(e.touches[0].clientY);
+  }, { passive: false });
+
+  sheet.addEventListener('touchend', function() { end(); }, { passive: true });
+  sheet.addEventListener('touchcancel', function() { end(); }, { passive: true });
 })();
 
 </script>
