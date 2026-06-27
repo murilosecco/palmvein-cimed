@@ -598,6 +598,59 @@ body{
   to{opacity:1;transform:translateY(0)}
 }
 
+
+/* ── ÍCONE MINT NOS BENEFITS ── */
+.bicon svg { display:block; }
+
+/* ── FLIP HINT COM ÍCONE PISCANTE ── */
+.flip-hint {
+  position:absolute;
+  bottom:12px; right:14px;
+  font-size:9px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase;
+  display:flex; align-items:center; gap:5px;
+}
+.flip-hint-navy { color:rgba(17,40,96,.45); }
+.flip-hint-white { color:rgba(255,255,255,.4); }
+
+.hint-pulse {
+  width:7px; height:7px;
+  border-radius:50%;
+  background:#56EF9E;
+  display:inline-block;
+  animation:hintPulse 1.4s ease-in-out infinite;
+  flex-shrink:0;
+}
+.flip-hint-white .hint-pulse { background:#56EF9E; }
+.flip-hint-navy  .hint-pulse { background:#2B8AFC; }
+
+@keyframes hintPulse {
+  0%,100% { opacity:.3; transform:scale(.8); }
+  50%      { opacity:1;  transform:scale(1.2); }
+}
+
+/* ── ENTRADA DOS CARDS GIRANDO ── */
+.deck-card-enter {
+  opacity:0;
+  transform:rotateY(-25deg) translateY(18px);
+  transform-style:preserve-3d;
+  transition:
+    opacity  .55s cubic-bezier(.16,1,.3,1),
+    transform .55s cubic-bezier(.16,1,.3,1);
+}
+.deck-card-enter.visible {
+  opacity:1;
+  transform:rotateY(0deg) translateY(0);
+}
+
+/* ── ICON WRAPPER NOS BENEFITS ── */
+.bicon {
+  width:36px; height:36px;
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+
 </style>
 </head>
 <body>
@@ -712,7 +765,7 @@ body{
               <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Meta de <strong>R$ 10 bilhões</strong> até 2030</div></div>
               <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">98% dos pontos de venda do Brasil</div></div>
             </div>
-            <div class="flip-hint flip-hint-navy">↺ voltar</div>
+            <div class="flip-hint flip-hint-navy"><span class="hint-pulse"></span>↺ voltar</div>
           </div>
         </div>
       </div>
@@ -727,7 +780,7 @@ body{
               <p>Uma empresa que quer R$ 10bi até 2030 não pode ter um sistema de acesso do século passado.</p>
             </div>
             <div class="c-body b-gray" style="margin-top:10px;font-size:11px">Crachá, senha e ponto manual = fraude, fricção e risco operacional em escala.</div>
-            <div class="flip-hint flip-hint-navy">toque para ver riscos</div>
+            <div class="flip-hint flip-hint-navy"><span class="hint-pulse"></span>toque para ver riscos</div>
           </div>
           <div class="flip-back face-navy card-pad" style="position:relative">
             <div class="glow-dot"></div>
@@ -738,7 +791,7 @@ body{
               <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Risco de conformidade regulatória (GMP)</div></div>
               <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Experiência de evento abaixo do nível da marca</div></div>
             </div>
-            <div class="flip-hint flip-hint-white">↺ voltar</div>
+            <div class="flip-hint flip-hint-white"><span class="hint-pulse"></span>↺ voltar</div>
           </div>
         </div>
       </div>
@@ -757,7 +810,7 @@ body{
             <div class="c-title t-white">Biometria vascular: o identificador que não pode ser copiado</div>
             <div class="c-body b-dim" style="margin-top:8px">Leitura do mapa vascular interno da palma — único, invisível e permanente. Sem contato físico. Sem dispositivo.</div>
             <div style="margin-top:14px;display:inline-block;background:var(--mint);color:var(--navy);font-family:var(--fd);font-size:12px;font-weight:700;padding:6px 14px;border-radius:980px">Você é o seu token.</div>
-            <div class="flip-hint flip-hint-white">toque para ver diferenciais</div>
+            <div class="flip-hint flip-hint-white"><span class="hint-pulse"></span>toque para ver diferenciais</div>
           </div>
           <div class="flip-back face-white card-pad">
             <div class="c-label lbl-blue">Diferenciais técnicos</div>
@@ -768,7 +821,7 @@ body{
               <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Anatel homologado</div></div>
               <div class="back-item"><div class="bi-dot bi-dot-blue"></div><div class="bi-text b-gray">Parceria Mastercard Click2Pay</div></div>
             </div>
-            <div class="flip-hint flip-hint-navy">↺ voltar</div>
+            <div class="flip-hint flip-hint-navy"><span class="hint-pulse"></span>↺ voltar</div>
           </div>
         </div>
       </div>
@@ -780,14 +833,14 @@ body{
             <div class="c-label lbl-blue">Duas frentes</div>
             <div class="c-title t-navy">Operação + experiência de marca</div>
             <div class="benefit" style="margin-top:12px">
-              <div class="bicon" style="background:var(--navy)">🔒</div>
+              <div class="bicon" style="background:rgba(17,40,96,.9)"><svg width="18" height="18" style="display:block;flex-shrink:0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="#56EF9E"><path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Zm-68-56a12,12,0,1,1-12-12A12,12,0,0,1,140,152Z"/></svg></div>
               <div><div class="bt">Frente 1 — Segurança</div><div class="bd">Controle de acesso, jornada, logística e conformidade</div></div>
             </div>
             <div class="benefit" style="margin-top:10px">
-              <div class="bicon" style="background:var(--blue)">✦</div>
+              <div class="bicon" style="background:rgba(43,138,252,.9)"><svg width="18" height="18" style="display:block;flex-shrink:0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="#56EF9E"><path d="M248,120a48.05,48.05,0,0,0-48-48H160.2c-2.91-.17-53.62-3.74-101.91-44.24A16,16,0,0,0,32,40V200a16,16,0,0,0,26.29,12.25c37.77-31.68,77-40.76,93.71-43.3v31.72A16,16,0,0,0,159.12,214l11,7.33A16,16,0,0,0,194.5,212l11.77-44.36A48.07,48.07,0,0,0,248,120ZM48,199.93V40h0c42.81,35.91,86.63,45,104,47.24v65.48C134.65,155,90.84,164.07,48,199.93Zm131,8,0,.11-11-7.33V168h21.6ZM200,152H168V88h32a32,32,0,1,1,0,64Z"/></svg></div>
               <div><div class="bt">Frente 2 — Marketing</div><div class="bd">Eventos, convenções, credenciamento VIP, ativações</div></div>
             </div>
-            <div class="flip-hint flip-hint-navy">toque para ver aplicações</div>
+            <div class="flip-hint flip-hint-navy"><span class="hint-pulse"></span>toque para ver aplicações</div>
           </div>
           <div class="flip-back face-navy card-pad" style="position:relative">
             <div class="glow-dot"></div>
@@ -800,7 +853,7 @@ body{
               <div class="frente-item"><div class="fi-title">Convenções</div><div class="fi-desc">Credenciamento biométrico</div></div>
               <div class="frente-item"><div class="fi-title">Parceiros</div><div class="fi-desc">Acesso e leads em tempo real</div></div>
             </div>
-            <div class="flip-hint flip-hint-white">↺ voltar</div>
+            <div class="flip-hint flip-hint-white"><span class="hint-pulse"></span>↺ voltar</div>
           </div>
         </div>
       </div>
@@ -822,7 +875,7 @@ body{
               <div class="m-dot"><div class="m-val">1</div><div class="m-lbl">Evento Corporativo</div></div>
             </div>
             <div class="c-body b-dim" style="margin-top:14px;font-size:11px">Operação assistida com relatório de ROI ao final dos 90 dias.</div>
-            <div class="flip-hint flip-hint-white">toque para ver indicadores</div>
+            <div class="flip-hint flip-hint-white"><span class="hint-pulse"></span>toque para ver indicadores</div>
           </div>
           <div class="flip-back face-white card-pad">
             <div class="c-label lbl-blue">Indicadores do piloto</div>
@@ -846,7 +899,7 @@ body{
                 </div>
               </div>
             </div>
-            <div class="flip-hint flip-hint-navy">↺ voltar</div>
+            <div class="flip-hint flip-hint-navy"><span class="hint-pulse"></span>↺ voltar</div>
           </div>
         </div>
       </div>
@@ -861,7 +914,7 @@ body{
             <div class="c-label lbl-blue">Posicionamento</div>
             <div class="c-title t-navy">A primeira farmacêutica brasileira com biometria vascular em larga escala</div>
             <div class="c-body b-gray" style="margin-top:8px;font-size:11px">Mídia espontânea, employer branding e diferenciação competitiva inegociável.</div>
-            <div class="flip-hint flip-hint-navy">toque para ver impacto</div>
+            <div class="flip-hint flip-hint-navy"><span class="hint-pulse"></span>toque para ver impacto</div>
           </div>
           <div class="flip-back face-mint card-pad">
             <div class="c-label lbl-navy">Impacto de marca</div>
@@ -871,7 +924,7 @@ body{
               <div class="back-item"><div class="bi-dot" style="background:var(--navy)"></div><div class="bi-text b-navy">Employer branding premium</div></div>
               <div class="back-item"><div class="bi-dot" style="background:var(--navy)"></div><div class="bi-text b-navy">Diferenciação competitiva no setor</div></div>
             </div>
-            <div class="flip-hint flip-hint-navy">↺ voltar</div>
+            <div class="flip-hint flip-hint-navy"><span class="hint-pulse"></span>↺ voltar</div>
           </div>
         </div>
       </div>
@@ -881,7 +934,7 @@ body{
             <div class="c-label lbl-blue">Eficiência</div>
             <div class="c-title t-navy">ROI direto em operação</div>
             <div class="c-body b-gray" style="margin-top:8px;font-size:11px">Fim da fraude de ponto, acesso rastreável e conformidade regulatória — mensuráveis desde o dia 1.</div>
-            <div class="flip-hint flip-hint-navy">toque para ver ganhos</div>
+            <div class="flip-hint flip-hint-navy"><span class="hint-pulse"></span>toque para ver ganhos</div>
           </div>
           <div class="flip-back face-navy card-pad" style="position:relative">
             <div class="glow-dot"></div>
@@ -892,7 +945,7 @@ body{
               <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Acesso condicionado a certificações</div></div>
               <div class="back-item"><div class="bi-dot"></div><div class="bi-text b-dim">Auditoria automática de acessos</div></div>
             </div>
-            <div class="flip-hint flip-hint-white">↺ voltar</div>
+            <div class="flip-hint flip-hint-white"><span class="hint-pulse"></span>↺ voltar</div>
           </div>
         </div>
       </div>
