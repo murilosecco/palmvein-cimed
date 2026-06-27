@@ -673,7 +673,7 @@ body{
     </g>
   </g>
 </svg>
-    <button class="btn-close" onclick="window.location.href='https://murilosecco.github.io/palmvein-cimed/narrativa.html'">← Voltar ao resumo</button>
+    <button class="btn-close" onclick="closeDeck()">← Voltar ao resumo</button>
   </div>
 
   <div class="deck-body">
@@ -957,8 +957,7 @@ body{
 <script>
 // ── DECK open/close ──
 function openDeck(){
-  // redirect to narrative
-window.location.href='https://murilosecco.github.io/palmvein-cimed/narrativa.html';
+  document.getElementById('teaser').style.display='none';
   const deck=document.getElementById('fullDeck');
   deck.classList.add('open');
   window.scrollTo(0,0);
