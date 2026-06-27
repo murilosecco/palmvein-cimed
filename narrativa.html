@@ -462,11 +462,16 @@ body{
 }
 .bs-overlay.open .bs-sheet{ transform:translateY(0); }
 .bs-handle{
-  width:36px;height:4px;
-  border-radius:2px;
-  background:rgba(255,255,255,.2);
+  width:40px;height:5px;
+  border-radius:3px;
+  background:rgba(255,255,255,.35);
   margin:0 auto 20px;
+  cursor:grab;
+  transition:background .2s;
 }
+.bs-handle:active{ cursor:grabbing; }
+.bs-sheet.dragging{ transition:none; }
+
 .bs-header{ margin-bottom:20px;padding:0 4px; }
 .bs-title{
   font-family:'Space Grotesk',sans-serif;
@@ -1002,6 +1007,71 @@ document.addEventListener('keydown', e => {
   }, { passive: true });
 
   update();
+})();
+
+
+// ── DRAG TO DISMISS: bottom sheet ──
+(function() {
+  const sheet   = document.getElementById('bsSheet');
+  const overlay = document.getElementById('bsOverlay');
+  if (!sheet || !overlay) return;
+
+  let startY    = 0;
+  let currentY  = 0;
+  let dragging  = false;
+  const THRESHOLD = 120; // px para fechar
+
+  function onStart(e) {
+    // Só iniciar se tocou no handle ou no sheet (não nos botões)
+    const target = e.target;
+    if (target.tagName === 'A' || target.tagName === 'BUTTON') return;
+    dragging = true;
+    startY   = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+    sheet.classList.add('dragging');
+    sheet.style.transition = 'none';
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    currentY = (e.type === 'touchmove' ? e.touches[0].clientY : e.clientY) - startY;
+    if (currentY < 0) currentY = 0; // não sobe
+    sheet.style.transform = `translateY(${currentY}px)`;
+    // Escurecer overlay proporcionalmente
+    const ratio = Math.max(0, 1 - currentY / (THRESHOLD * 2));
+    overlay.style.background = `rgba(0,0,0,${(0.6 * ratio).toFixed(2)})`;
+  }
+
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    sheet.classList.remove('dragging');
+    sheet.style.transition = '';
+
+    if (currentY > THRESHOLD) {
+      // Fechar
+      sheet.style.transform = `translateY(100%)`;
+      overlay.style.background = '';
+      setTimeout(() => {
+        closeContact();
+        sheet.style.transform = '';
+      }, 320);
+    } else {
+      // Voltar ao lugar
+      sheet.style.transform = '';
+      overlay.style.background = '';
+    }
+    currentY = 0;
+  }
+
+  // Touch
+  sheet.addEventListener('touchstart', onStart, { passive: true });
+  sheet.addEventListener('touchmove',  onMove,  { passive: true });
+  sheet.addEventListener('touchend',   onEnd);
+
+  // Mouse (desktop)
+  sheet.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup',   onEnd);
 })();
 
 </script>
