@@ -191,7 +191,7 @@ body{
 
 /* ── SCENE 4: VIRADA ── */
 .scene-turn{
-  overflow:hidden;
+  overflow:visible; /* sticky precisa de overflow:visible */
   background-color:#06122e;
   position:relative;
   overflow:hidden;
@@ -734,7 +734,7 @@ body{
   top: 0;
   height: 100vh;
   min-height: 100vh;
-  overflow: hidden;
+  overflow: visible; /* NÃO pode ser hidden — quebra sticky */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -761,6 +761,17 @@ body{
 .scene-turn > *:not(.turn-video-bg) {
   position: relative;
   z-index: 2;
+}
+
+
+/* ── OVERRIDE: scene-turn não herda overflow:hidden da .scene ── */
+.scene.scene-turn,
+#turnScene {
+  overflow: visible !important;
+}
+/* O clipping visual fica na wrapper */
+.scene-turn-wrapper {
+  overflow: hidden;
 }
 
 </style>
